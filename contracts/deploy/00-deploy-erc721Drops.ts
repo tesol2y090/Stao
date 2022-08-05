@@ -60,7 +60,7 @@ const deployERC721Drop: DeployFunction = async function (
     args: [
       zoraFeeManager.address,
       ethers.constants.AddressZero,
-      factoryUpgradeGate,
+      factoryUpgradeGate.address,
     ],
     log: true,
     // we need to wait if on a live network so we can verify properly
