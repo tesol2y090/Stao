@@ -13,8 +13,10 @@ const deployERC721Drop: DeployFunction = async function (
 ) {
   // @ts-ignore
   const { getNamedAccounts, deployments, network } = hre
-  const { deploy, log } = deployments
+  const { deploy, log, get } = deployments
   const { deployer } = await getNamedAccounts()
+
+  const erc721TransferHelper = await get("ERC721TransferHelper")
 
   log("----------------------------------------------------")
   log("Deploying FactoryUpgradeGate and waiting for confirmations...")
@@ -59,7 +61,7 @@ const deployERC721Drop: DeployFunction = async function (
     from: deployer,
     args: [
       zoraFeeManager.address,
-      ethers.constants.AddressZero,
+      erc721TransferHelper.address,
       factoryUpgradeGate.address,
     ],
     log: true,
@@ -73,10 +75,11 @@ const deployERC721Drop: DeployFunction = async function (
   ) {
     await verify(erc721Drop.address, [
       zoraFeeManager.address,
-      ethers.constants.AddressZero,
+      erc721TransferHelper.address,
       factoryUpgradeGate,
     ])
   }
 }
 export default deployERC721Drop
 deployERC721Drop.tags = ["all", "erc721Drop"]
+deployERC721Drop.dependencies = ["erc721TransferHelper"]

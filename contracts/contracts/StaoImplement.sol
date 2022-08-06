@@ -25,18 +25,13 @@ contract StaoImplement is Ownable {
 
 	event CreateNFT(address creator, address collection, uint256 timestamp);
 
-	constructor(ZoraNFTCreatorV1 _zoraNFTCreator) {
+	constructor(ZoraNFTCreatorV1 _zoraNFTCreator, string memory _name, string memory _symbol, string memory _description) {
 			zoraNFTCreator = _zoraNFTCreator;
 			fundsRecipient = payable(msg.sender);
 			defaultAdmin = msg.sender;
-	}
-
-	function setName(string memory _name) public onlyOwner {
 			name = _name;
-	}
-
-	function setSymbol(string memory _symbol) public onlyOwner {
 			symbol = _symbol;
+			description = _description;
 	}
 
 	function setEditionSize(uint64 _editionSize) public onlyOwner {
@@ -49,10 +44,6 @@ contract StaoImplement is Ownable {
 
 	function setSaleConfig(IERC721Drop.SalesConfiguration memory _saleConfig) public onlyOwner {
 			saleConfig = _saleConfig;
-	}
-
-	function setDescription(string memory _description) public onlyOwner {
-			description = _description;
 	}
 
 	function setAnimationURI(string memory _animationURI) public onlyOwner {

@@ -24,6 +24,7 @@ const deployStao: DeployFunction = async function (
     args: [
       STAOCONFIG.name,
       STAOCONFIG.symbol,
+      STAOCONFIG.description,
       STAOCONFIG.amountPerContributor,
       STAOCONFIG.maxContributors,
       STAOCONFIG.minDelay,
@@ -44,6 +45,7 @@ const deployStao: DeployFunction = async function (
     await verify(stao.address, [
       STAOCONFIG.name,
       STAOCONFIG.symbol,
+      STAOCONFIG.description,
       STAOCONFIG.amountPerContributor,
       STAOCONFIG.maxContributors,
       STAOCONFIG.minDelay,

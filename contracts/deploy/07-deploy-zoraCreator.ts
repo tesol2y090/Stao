@@ -43,3 +43,4 @@ const deployZoraCreator: DeployFunction = async function (
 
 export default deployZoraCreator
 deployZoraCreator.tags = ["all", "zoraCreator"]
+deployZoraCreator.dependencies = ["erc721Drop"]

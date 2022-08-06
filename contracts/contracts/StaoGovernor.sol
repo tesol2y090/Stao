@@ -16,6 +16,7 @@ contract StaoGovernor is
   GovernorVotesQuorumFraction,
   GovernorTimelockControl
 {
+  
   constructor(
     IVotes _token,
     TimelockController _timelock,
