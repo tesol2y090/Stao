@@ -1,7 +1,9 @@
 import React from "react"
+import Link from "next/link"
 import styled from "styled-components"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import Image from "next/image"
+import { useRouter } from "next/router"
 
 const Container = styled.header`
   width: 100vw;
@@ -28,12 +30,17 @@ const MenuItem = styled.a<{ active?: boolean }>`
 `
 
 const Header = () => {
+  const { pathname } = useRouter()
   return (
     <Container>
       <Image src="/logo.png" width={212} height={56} />
       <Menu>
-        <MenuItem active>Explore</MenuItem>
-        <MenuItem>Create</MenuItem>
+        <Link href="/">
+          <MenuItem active={pathname === "/"}>Explore</MenuItem>
+        </Link>
+        <Link href="/create">
+          <MenuItem active={pathname === "/create"}>Create</MenuItem>
+        </Link>
       </Menu>
       <ConnectButton />
     </Container>

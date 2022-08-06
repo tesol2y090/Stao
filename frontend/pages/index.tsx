@@ -1,8 +1,59 @@
 import type { NextPage } from "next"
 import Head from "next/head"
-import Image from "next/image"
-import styles from "../styles/Home.module.css"
 import Header from "../components/Header"
+import styled from "styled-components"
+import ProjectCard from "../components/ProjectCard"
+import Footer from "../components/Footer"
+
+const Content = styled.div`
+  padding: 24px 60px;
+`
+
+const ProjectContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+  flex-wrap: wrap;
+
+  .title-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .content {
+    margin-top: 32px;
+    display: flex;
+  }
+
+  .dot-yellow {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffee94;
+    margin-right: 24px;
+  }
+
+  .dot-green {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #22da40e4;
+    margin-right: 24px;
+  }
+
+  .dot-red {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff4133;
+    margin-right: 24px;
+  }
+
+  .title {
+    font-weight: bold;
+    font-size: 24px;
+  }
+`
 
 const Home: NextPage = () => {
   return (
@@ -13,6 +64,42 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
+      <Content>
+        <ProjectContainer>
+          <div className="title-container">
+            <div className="dot-yellow" />
+            <div className="title">Start Project</div>
+          </div>
+          <div className="content">
+            <ProjectCard />
+            <ProjectCard />
+            <ProjectCard />
+          </div>
+        </ProjectContainer>
+        <ProjectContainer>
+          <div className="title-container">
+            <div className="dot-green" />
+            <div className="title">Ongoing Project</div>
+          </div>
+          <div className="content">
+            <ProjectCard />
+            <ProjectCard />
+            <ProjectCard />
+          </div>
+        </ProjectContainer>
+        <ProjectContainer>
+          <div className="title-container">
+            <div className="dot-red" />
+            <div className="title">End Project</div>
+          </div>
+          <div className="content">
+            <ProjectCard />
+            <ProjectCard />
+            <ProjectCard />
+          </div>
+        </ProjectContainer>
+      </Content>
+      <Footer />
     </div>
   )
 }

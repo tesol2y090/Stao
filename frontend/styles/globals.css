@@ -4,9 +4,11 @@ body {
   margin: 0;
   font-family: Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  background: linear-gradient(63.81deg, #2EC747 -37.36%, rgba(0, 0, 0, 0.85) 25.97%);
+  /* background: linear-gradient(63.81deg, #2EC747 -37.36%, rgba(0, 0, 0, 0.85) 25.97%); */
+  background-image: url('/bg.png');
+  background-repeat: no-repeat;
+  background-size: cover;
   color: #fff;
-  height: 100vh;
 }
 
 a {
