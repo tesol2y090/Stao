@@ -1,10 +1,21 @@
+import {
+  useContractReads,
+  useContractWrite,
+  usePrepareContractWrite,
+} from "wagmi"
 import type { NextPage } from "next"
 import Head from "next/head"
+import { ethers } from "ethers"
+import { useRouter } from "next/router"
 import Image from "next/image"
 import Header from "../components/Header"
 import styled from "styled-components"
-import ProjectCard from "../components/ProjectCard"
 import Footer from "../components/Footer"
+import StaoJson from "../abi/Stao.json"
+import Skeleton from "react-loading-skeleton"
+import ProjectSetting from "../components/ProjectSetting"
+import { shortAddress } from "../helper"
+import { ProjectState } from "../types"
 
 const Content = styled.div`
   padding: 24px 60px;
@@ -33,6 +44,7 @@ const ProjectDetail = styled.div`
 
     .description {
       margin-top: 24px;
+      color: #d9d9d9;
     }
   }
 
@@ -87,55 +99,6 @@ const TitleContainer = styled.div`
   }
 `
 
-const ProjectSetting = styled.div`
-  margin-top: 60px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-
-  .left {
-    width: 50%;
-  }
-
-  .right {
-    background: linear-gradient(
-      180deg,
-      rgba(217, 217, 217, 0.25) 0%,
-      rgba(217, 217, 217, 0) 0.01%
-    );
-    backdrop-filter: blur(50px);
-    border-radius: 12px;
-
-    padding: 28px;
-    border: 1px solid #2ec747;
-    width: 500px;
-
-    .row {
-      color: #8991dc;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      margin: 12px;
-    }
-
-    .amount {
-      text-shadow: 0px 0px 20px rgba(255, 255, 255, 0.5);
-      font-size: 32px;
-      margin: 16px;
-      display: flex;
-      align-items: center;
-
-      .dot-green {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: #22da40e4;
-        margin-right: 24px;
-      }
-    }
-  }
-`
-
 const CreatorDetail = styled.div`
   display: flex;
   flex-direction: column;
@@ -164,12 +127,15 @@ const CreatorDetail = styled.div`
   }
 `
 
-const CreateButton = styled.div`
+const CreateButton = styled.button`
   background: linear-gradient(
     90deg,
     #28a2b6 35.77%,
     rgba(76, 184, 121, 0.950611) 80.16%
   );
+  color: #fff;
+  outline: none;
+  border: none;
   box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.12);
   border-radius: 12px;
   width: 100%;
@@ -185,25 +151,83 @@ const CreateButton = styled.div`
   }
 `
 
-const OutlineButton = styled.div`
-  background: transparent;
-  border-radius: 12px;
-  width: 100%;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 12px;
-  cursor: pointer;
-  color: #bcffd7;
-  border: 1px solid #bcffd7;
-
-  &:hover {
-    opacity: 0.83;
-  }
-`
-
 const Create: NextPage = () => {
+  const router = useRouter()
+  const { address } = router.query
+
+  const projectContract = {
+    addressOrName: address as string,
+    contractInterface: StaoJson.abi,
+  }
+
+  const { data, isError, isLoading }: any = useContractReads({
+    watch: true,
+    contracts: [
+      {
+        ...projectContract,
+        functionName: "name",
+      },
+      {
+        ...projectContract,
+        functionName: "description",
+      },
+      {
+        ...projectContract,
+        functionName: "amountPerContributor",
+      },
+      {
+        ...projectContract,
+        functionName: "maxContributors",
+      },
+      {
+        ...projectContract,
+        functionName: "contribitorShareBPS",
+      },
+      {
+        ...projectContract,
+        functionName: "contributorsAmount",
+      },
+      {
+        ...projectContract,
+        functionName: "projectState",
+      },
+      {
+        ...projectContract,
+        functionName: "owner",
+      },
+      {
+        ...projectContract,
+        functionName: "staoGovern",
+      },
+      {
+        ...projectContract,
+        functionName: "staoImplement",
+      },
+    ],
+  })
+
+  const [
+    projectName,
+    projectDescription,
+    amountPerContributor,
+    maxContributors,
+    contritorShareBPS,
+    contributorsAmount,
+    projectState,
+    projectOwner,
+    projectGovernance,
+    projectImplement,
+  ]: any = data || ["", "", "0", "0", "0", "0", 0, "", "", ""]
+
+  const { config } = usePrepareContractWrite({
+    ...projectContract,
+    functionName: "contribute",
+    overrides: {
+      value: ethers.utils.parseEther("0.001"),
+    },
+  })
+  const { write: onContribute } = useContractWrite(config)
+
   return (
     <div style={{ minHeight: "100vh" }}>
       <Head>
@@ -218,8 +242,8 @@ const Create: NextPage = () => {
             <div className="title">
               <Image src="/dog-small.svg" width={80} height={80} />
               <div className="project-detail">
-                <h1>Project Name</h1>
-                <p>0xdfdf...3ka0s3</p>
+                <h1>{isLoading ? <Skeleton /> : projectName}</h1>
+                <p>{isLoading ? <Skeleton /> : shortAddress(projectOwner)}</p>
               </div>
             </div>
             <div className="description">
@@ -238,68 +262,77 @@ const Create: NextPage = () => {
           </div>
           <div className="right">
             <div className="row">Funding Goals</div>
-            <div className="amount">1000 ETH</div>
+            <div className="amount">
+              {isLoading || !data ? (
+                <Skeleton />
+              ) : (
+                Number(ethers.utils.formatEther(amountPerContributor || "0")) *
+                Number(maxContributors)
+              )}{" "}
+              Matic
+            </div>
             <div className="row">
               <span>Amount:</span>
-              <span>10 ETH</span>
+              <span>
+                {isLoading ? (
+                  <Skeleton />
+                ) : (
+                  Number(ethers.utils.formatEther(amountPerContributor || "0"))
+                )}{" "}
+                Matic
+              </span>
+            </div>
+            <div className="row">
+              <span>Contributors Shares Percent:</span>
+              <span>
+                {isLoading ? <Skeleton /> : Number(contritorShareBPS || "0")}%
+              </span>
             </div>
             <div className="row">
               <span>Remain:</span>
-              <span>5</span>
+              <span>
+                {isLoading ? (
+                  <Skeleton />
+                ) : (
+                  Number(maxContributors) - Number(contributorsAmount || "0")
+                )}
+              </span>
             </div>
             <div className="row">
               <span>Max Contributor:</span>
-              <span>10</span>
+              <span>
+                {isLoading ? <Skeleton /> : Number(maxContributors || "0")}{" "}
+              </span>
             </div>
-            <CreateButton>Contribute</CreateButton>
+            {projectState === ProjectState.RaiseFunding && (
+              <CreateButton
+                disabled={!onContribute}
+                onClick={() => onContribute?.()}
+              >
+                Contribute
+              </CreateButton>
+            )}
           </div>
         </ProjectDetail>
-
-        <ProjectSetting>
-          <div className="left">
-            <TitleContainer>
-              <div className="dot" />
-              <div className="header">Project Setting</div>
-            </TitleContainer>
-          </div>
-          <div className="right">
-            <div className="amount">
-              <div className="dot-green" />
-              Edition Size
-            </div>
-            <div className="row">
-              <span>Propose By:</span>
-              <span>0xd3asd...334</span>
-            </div>
-            <div className="row">
-              <span>Edition Size:</span>
-              <span>5,000</span>
-            </div>
-            <div className="row">
-              <span>Vote For:</span>
-              <span>10</span>
-            </div>
-            <div className="row">
-              <span>Vote Agianst:</span>
-              <span>10</span>
-            </div>
-            <div className="row">
-              <span>Total Vote:</span>
-              <span>30</span>
-            </div>
-            <CreateButton>Vote For</CreateButton>
-            <OutlineButton>Vote Agianst</OutlineButton>
-          </div>
-        </ProjectSetting>
-
+        {projectState ? (
+          <ProjectSetting
+            projectState={projectState}
+            projectContract={projectContract}
+            projectGovernance={projectGovernance}
+            projectImplement={projectImplement}
+            projectOwner={projectOwner}
+          />
+        ) : (
+          ""
+        )}
         <CreatorDetail>
           <TitleContainer>
             <div className="dot" />
             <div className="header">Creator Detail</div>
           </TitleContainer>
           <div className="content">
-            <Image src="/dog-small.svg" width={640} height={460} />
-            <div className="detail">
+            <Image src="/cat-bg.svg" width={640} height={460} />
+            <div style={{ marginTop: 16 }} className="detail">
               <span>Portfolio:</span>
               <b>gangKantapat.me</b>
             </div>

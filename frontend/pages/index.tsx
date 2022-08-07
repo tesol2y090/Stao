@@ -56,6 +56,49 @@ const ProjectContainer = styled.div`
 `
 
 const Home: NextPage = () => {
+
+  const startProject: any = [
+    {
+      name: "dog in the sky",
+      image: "/cat-bg.svg",
+      address: "0xB74B83ebe62BF1b8A0d0F4a26E5BE133aEC0B34b",
+      owner: "0x480cFCFD4059aa2e22d5fEFC42BaD2b5EfE96ECf",
+      amount: "0.001",
+      remain: "0",
+      max: "2",
+    },
+  ]
+
+  const onGoingProject: any = [
+    {
+      name: "Test Porject",
+      image: "/girl-dog.svg",
+      address: "0xbe46b83329188f2e4eba68f4fc4863ca1a5f040a",
+      owner: "0x58dEaf543e89fEccC00720a0dC5d6409328E96E4",
+      amount: "0.001",
+      remain: "0",
+      max: "2",
+    },
+    {
+      name: "Test Project 2",
+      image: "/boy.svg",
+      address: "0xAaD57e31cE8e7cF534F0963e2Cc182Cf41b4834F",
+      owner: "0x58dEaf543e89fEccC00720a0dC5d6409328E96E4",
+      amount: "0.001",
+      remain: "0",
+      max: "2",
+    },
+    {
+      name: "test 4",
+      image: "/boywithearth.svg",
+      address: "0xc0b25979bfe9b5748205f7e26d9b578242a9d8fa",
+      owner: "0x58dEaf543e89fEccC00720a0dC5d6409328E96E4",
+      amount: "0.001",
+      remain: "0",
+      max: "2",
+    },
+  ]
+
   return (
     <div>
       <Head>
@@ -68,12 +111,12 @@ const Home: NextPage = () => {
         <ProjectContainer>
           <div className="title-container">
             <div className="dot-yellow" />
-            <div className="title">Start Project</div>
+            <div className="title">Funding Project</div>
           </div>
           <div className="content">
-            <ProjectCard />
-            <ProjectCard />
-            <ProjectCard />
+            {startProject.map((data: any) => (
+              <ProjectCard key={data.address} data={data} />
+            ))}
           </div>
         </ProjectContainer>
         <ProjectContainer>
@@ -82,9 +125,9 @@ const Home: NextPage = () => {
             <div className="title">Ongoing Project</div>
           </div>
           <div className="content">
-            <ProjectCard />
-            <ProjectCard />
-            <ProjectCard />
+            {onGoingProject.map((data: any) => (
+              <ProjectCard key={data.address} data={data} />
+            ))}
           </div>
         </ProjectContainer>
         <ProjectContainer>
@@ -92,11 +135,7 @@ const Home: NextPage = () => {
             <div className="dot-red" />
             <div className="title">End Project</div>
           </div>
-          <div className="content">
-            <ProjectCard />
-            <ProjectCard />
-            <ProjectCard />
-          </div>
+          <div className="content"></div>
         </ProjectContainer>
       </Content>
       <Footer />

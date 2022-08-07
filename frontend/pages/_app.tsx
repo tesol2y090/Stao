@@ -10,6 +10,8 @@ import {
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi"
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { publicProvider } from "wagmi/providers/public"
+import "react-loading-skeleton/dist/skeleton.css"
+import dynamic from "next/dynamic"
 
 const { chains, provider, webSocketProvider } = configureChains(
   [
@@ -63,4 +65,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   )
 }
 
-export default MyApp
+export default dynamic(() => Promise.resolve(MyApp), {
+  ssr: false,
+})

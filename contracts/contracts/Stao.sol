@@ -45,6 +45,7 @@ contract Stao is Ownable, ERC20Votes {
     uint256 public amountPerContributor;
     uint256 public maxContributors;
     uint256 public contributorsAmount;
+    uint256 public contribitorShareBPS;
     ProjectState public projectState;
 
     mapping (address => bool) public isContribute;
@@ -58,6 +59,7 @@ contract Stao is Ownable, ERC20Votes {
         string memory _description,
         uint256 _amountPerContributor, 
         uint256 _maxContributors, 
+        uint256 _contribitorShareBPS,
         uint256 _minDelay, 
         uint256 _quorumPercentage, 
         uint256 _votingPeriod, 
@@ -67,6 +69,7 @@ contract Stao is Ownable, ERC20Votes {
         projectState = ProjectState.RaiseFunding;
         amountPerContributor = _amountPerContributor;
         maxContributors = _maxContributors;
+        contribitorShareBPS = _contribitorShareBPS;
         address[] memory proposers;
         address[] memory executors;
         timeLock = new TimeLock(_minDelay, proposers, executors);
@@ -86,6 +89,7 @@ contract Stao is Ownable, ERC20Votes {
         require(contributorsAmount < maxContributors, "Max contributors!");
         require(projectState == ProjectState.RaiseFunding, "Too late!");
         _mint(msg.sender, 1 ether);
+        delegate(msg.sender);
         isContribute[msg.sender] = true;
         contributorsAmount += 1;
 

@@ -8,6 +8,7 @@ import "solidity-coverage"
 import "hardhat-deploy"
 import { HardhatUserConfig } from "hardhat/config"
 import "@nomicfoundation/hardhat-toolbox"
+import "hardhat-contract-sizer"
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -20,6 +21,11 @@ const config: HardhatUserConfig = {
       },
     },
   },
+  networks: {
+    localhost: {
+      allowUnlimitedContractSize: true,
+    },
+  },
   namedAccounts: {
     deployer: {
       default: 0, // here this will by default take the first account as deployer
@@ -28,6 +34,12 @@ const config: HardhatUserConfig = {
   },
   mocha: {
     timeout: 200000, // 200 seconds max for running tests
+  },
+  contractSizer: {
+    alphaSort: true,
+    disambiguatePaths: false,
+    runOnCompile: true,
+    strict: true,
   },
 }
 

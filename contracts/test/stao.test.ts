@@ -129,9 +129,6 @@ describe("Stao", async () => {
     const aliceAmount = await stao.balanceOf(await alice.getAddress())
     const bobAmount = await stao.balanceOf(await bob.getAddress())
 
-    await staoAsAlice.delegate(await alice.getAddress())
-    await staoAsBob.delegate(await bob.getAddress())
-
     expect(aliceAmount).to.be.equal(STAOCONFIG.amountPerContributor)
     expect(bobAmount).to.be.equal(STAOCONFIG.amountPerContributor)
 

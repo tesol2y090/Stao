@@ -1,10 +1,24 @@
+import { ethers } from "ethers"
 import type { NextPage } from "next"
+import { useRouter } from "next/router"
+import { useCallback, useState } from "react"
+import { useAccount, useSigner, useProvider } from "wagmi"
 import Head from "next/head"
 import Image from "next/image"
 import Header from "../components/Header"
 import styled from "styled-components"
 import ProjectCard from "../components/ProjectCard"
 import Footer from "../components/Footer"
+import { MoonLoader } from "react-spinners"
+
+import StaoJson from "../abi/Stao.json"
+import {
+  QUORUM_PERCENTAGE,
+  MIN_DELAY,
+  VOTING_PERIOD,
+  VOTING_DELAY,
+  ZORA_CREATOR,
+} from "../constants"
 
 const Content = styled.div`
   padding: 24px 60px;
@@ -72,7 +86,9 @@ const InputText = styled.input`
   }
 `
 
-const CreateButton = styled.div`
+const CreateButton = styled.button`
+  outline: none;
+  border: none;
   background: linear-gradient(
     90deg,
     #28a2b6 35.77%,
@@ -87,6 +103,7 @@ const CreateButton = styled.div`
   justify-content: center;
   margin-top: 28px;
   cursor: pointer;
+  color: #fff;
 
   &:hover {
     opacity: 0.83;
@@ -94,6 +111,69 @@ const CreateButton = styled.div`
 `
 
 const Create: NextPage = () => {
+  const { address } = useAccount()
+  const { data: signer } = useSigner()
+  const router = useRouter()
+
+  const [projectName, setProjectName] = useState<string>()
+  const [symbol, setSymbol] = useState<string>()
+  const [description, setDescription] = useState<string>()
+  const [amount, setAmount] = useState<number>()
+  const [maxContributors, setMaxContributors] = useState<number>()
+  const [contribitorShareBPS, setContribitorShareBPS] = useState<number>()
+  const [creatorName, setCreatorName] = useState<string>()
+  const [portfolio, setPortfolio] = useState<string>()
+  const [instagram, setInstagram] = useState<string>()
+  const [facebook, setFacebook] = useState<string>()
+  const [twitter, setTwitter] = useState<string>()
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const onCreate = useCallback(async () => {
+    setLoading(true)
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any)
+    const stao = new ethers.ContractFactory(
+      StaoJson.abi,
+      StaoJson.bytecode,
+      provider.getSigner()
+    )
+
+    try {
+      const staoContract = await stao.deploy(
+        projectName,
+        symbol,
+        description,
+        ethers.utils.parseEther(amount?.toString() as string),
+        maxContributors,
+        contribitorShareBPS,
+        MIN_DELAY,
+        QUORUM_PERCENTAGE,
+        VOTING_PERIOD,
+        VOTING_DELAY,
+        ZORA_CREATOR
+      )
+
+      await staoContract.deployed()
+
+      router.push(`/${staoContract.address}`)
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }, [
+    projectName,
+    symbol,
+    description,
+    amount,
+    maxContributors,
+    contribitorShareBPS,
+    creatorName,
+    portfolio,
+    instagram,
+    facebook,
+    twitter,
+  ])
+
   return (
     <div style={{ minHeight: "100vh" }}>
       <Head>
@@ -114,25 +194,53 @@ const Create: NextPage = () => {
           <div className="content">
             <InputRow>
               <Label>Name</Label>
-              <InputText type="text" />
+              <InputText
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                type="text"
+              />
             </InputRow>
             <InputRow>
               <Label>Symbol</Label>
-              <InputText type="text" />
+              <InputText
+                value={symbol}
+                onChange={(e) => setSymbol(e.target.value)}
+                type="text"
+              />
             </InputRow>
             <InputRow>
               <Label>Description</Label>
-              <InputText type="text" />
+              <InputText
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                type="text"
+              />
             </InputRow>
             <InputRow>
               <Label>
                 Amount <small>(MATIC)</small>
               </Label>
-              <InputText type="number" />
+              <InputText
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
+                type="number"
+              />
             </InputRow>
             <InputRow>
               <Label>Max Contributors</Label>
-              <InputText type="text" />
+              <InputText
+                value={maxContributors}
+                onChange={(e) => setMaxContributors(Number(e.target.value))}
+                type="text"
+              />
+            </InputRow>
+            <InputRow>
+              <Label>Contributors Shares Percent</Label>
+              <InputText
+                value={contribitorShareBPS}
+                onChange={(e) => setContribitorShareBPS(Number(e.target.value))}
+                type="text"
+              />
             </InputRow>
           </div>
         </ProjectContainer>
@@ -140,34 +248,57 @@ const Create: NextPage = () => {
         <ProjectContainer>
           <div className="title-container">
             <div className="dot" />
-            <div className="title">Project Detail</div>
+            <div className="title">Creator Detail</div>
           </div>
           <div className="content">
             <InputRow>
               <Label>Address</Label>
-              <InputText type="text" />
+              <InputText type="text" value={address} disabled />
             </InputRow>
             <InputRow>
               <Label>Name</Label>
-              <InputText type="text" />
+              <InputText
+                value={creatorName}
+                onChange={(e) => setCreatorName(e.target.value)}
+                type="text"
+              />
             </InputRow>
             <InputRow>
               <Label>Portfolio</Label>
-              <InputText type="text" />
+              <InputText
+                value={portfolio}
+                onChange={(e) => setPortfolio(e.target.value)}
+                type="text"
+              />
             </InputRow>
             <InputRow>
               <Label>Instagram</Label>
-              <InputText type="text" />
+              <InputText
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                type="text"
+              />
             </InputRow>
             <InputRow>
               <Label>Facebook</Label>
-              <InputText type="text" />
+              <InputText
+                value={facebook}
+                onChange={(e) => setFacebook(e.target.value)}
+                type="text"
+              />
             </InputRow>
             <InputRow>
               <Label>Twitter</Label>
-              <InputText type="text" />
+              <InputText
+                value={twitter}
+                onChange={(e) => setTwitter(e.target.value)}
+                type="text"
+              />
             </InputRow>
-            <CreateButton>Create</CreateButton>
+            <CreateButton disabled={loading} onClick={onCreate}>
+              {loading && <MoonLoader size={24} />}
+              <span style={{ marginLeft: 12 }}>Create</span>
+            </CreateButton>
           </div>
         </ProjectContainer>
       </Content>

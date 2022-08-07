@@ -1,6 +1,8 @@
 import React from "react"
 import styled from "styled-components"
 import Image from "next/image"
+import { shortAddress } from "../helper"
+import Link from "next/link"
 
 const Container = styled.div`
   background: linear-gradient(
@@ -61,31 +63,33 @@ const VisitButton = styled.div`
   }
 `
 
-const ProjectCard = () => {
+const ProjectCard = ({ data }: any) => {
   return (
     <Container>
-      <div className="img" />
+      <Image src={data.image} width={190} height={140} />
       <ProjectContent>
         <span>Project Name:</span>
-        <span>NFT Generator</span>
+        <span>{data.name}</span>
       </ProjectContent>
       <ProjectContent>
         <span>Owner:</span>
-        <span>0xasdsa...sd3</span>
+        <span>{shortAddress(data.owner)}</span>
       </ProjectContent>
       <ProjectContent>
         <span>Amount:</span>
-        <span>0.5 ETH</span>
+        <span>{data.amount} Matic</span>
       </ProjectContent>
       <ProjectContent>
         <span>Remain:</span>
-        <span>5</span>
+        <span>{data.remain}</span>
       </ProjectContent>
       <ProjectContent>
         <span>Max:</span>
-        <span>10</span>
+        <span>{data.max}</span>
       </ProjectContent>
-      <VisitButton>Visit</VisitButton>
+      <Link href={`/${data.address}`}>
+        <VisitButton>Visit</VisitButton>
+      </Link>
     </Container>
   )
 }

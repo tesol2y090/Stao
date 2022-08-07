@@ -16,6 +16,7 @@ export interface staoConfigDev {
   description: string
   amountPerContributor: string
   maxContributors: number
+  contribitorShareBPS: number
   minDelay: number
   quorumPercentage: number
   votingPeriod: number
@@ -61,6 +62,7 @@ export const STAOCONFIG: staoConfigDev = {
   description: "test description",
   amountPerContributor: ethers.utils.parseEther("1").toString(),
   maxContributors: 2,
+  contribitorShareBPS: 30,
   minDelay: MIN_DELAY,
   quorumPercentage: QUORUM_PERCENTAGE,
   votingPeriod: VOTING_PERIOD,
